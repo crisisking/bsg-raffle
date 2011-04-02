@@ -37,6 +37,7 @@ def winners():
     winners = DB.execute("SELECT participants.name, winners.prize_name FROM participants INNER JOIN winners ON participants.id = winners.participant_id").fetchall()
     response = '<ul><li>'
     response += '<li>'.join([winner[0] + ': ' + winner[1] for winner in winners])
+    DB.close()
     return response
 
 def build_db():
