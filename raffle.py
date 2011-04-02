@@ -23,8 +23,11 @@ def after_request(response):
 @app.route('/')
 def pick_user():
     """Picks a random participant that hasn't yet won a prize."""
-    users = g.db.execute("""SELECT id, name FROM participants WHERE id NOT IN
-                        (SELECT participant_id FROM winners)""").fetchall()
+    users = g.db.execute("""SELECT participants.id, participants.name
+        FROM participants
+        LEFT OUTER JOIN winners
+        ON winners.participant_id = participants.id
+        WHERE winners.participant_id IS NULL""").fetchall()
 
     user = random.choice(users)
     return render_template('winner.html', id=user[0], name=user[1])
