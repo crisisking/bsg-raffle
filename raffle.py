@@ -34,7 +34,7 @@ def add_winner():
     user_id = int(request.form['user_id'])
     prize = request.form['prize']
     with g.db:
-        g.db.execute("INSERT INTO winners(participant_id, prize_name) values (?, ?)", (user_id, prize))
+        g.db.execute('INSERT INTO winners(participant_id, prize_name) values (?, ?)', (user_id, prize))
     
     username = g.db.execute('SELECT name FROM participants WHERE id=?', (user_id,)).fetchone()
     return render_template('winner_added.html', name=username[0], prize=prize)
@@ -43,7 +43,7 @@ def add_winner():
 @app.route('/winners')
 def winners():
     """Lists all raffle winners, and what they won."""
-    winners = g.db.execute("SELECT participants.name, winners.prize_name FROM participants INNER JOIN winners ON participants.id = winners.participant_id").fetchall()
+    winners = g.db.execute('SELECT participants.name, winners.prize_name FROM participants INNER JOIN winners ON participants.id = winners.participant_id').fetchall()
     return render_template('winners_list.html', winners=winners)
 
 
