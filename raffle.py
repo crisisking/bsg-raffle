@@ -1,44 +1,41 @@
-import os
 import sqlite3
 import random
-from flask import Flask, render_template, request, redirect
-
-sqlite3.register_adapter
+from flask import Flask, render_template, request, redirect, g
 
 app = Flask(__name__)
 
+DATABASE = 'raffle.db'
 
-
+@app.before_request
+def before_request():
+    g.db = sqlite3.connect(DATABASE)
+    
+@app.after_request
+def after_request(response):
+    g.db.close()
+    return response
 
 @app.route('/')
 def pick_user():
-    DB = sqlite3.connect('raffle.db')
-    results = DB.execute('SELECT id, name FROM participants WHERE id NOT IN (SELECT participant_id FROM winners)')
-    users = results.fetchall()
-    DB.close()
+    users = g.db.execute('SELECT id, name FROM participants WHERE id NOT IN (SELECT participant_id FROM winners)').fetchall()
     user = random.choice(users)
     return render_template('winner.html', id=user[0], name=user[1])
     
 
 @app.route('/add_winner', methods=('POST',))
 def add_winner():
-    DB = sqlite3.connect('raffle.db')
     user_id = int(request.form['user_id'])
     prize = request.form['prize']
-    with DB:
-        DB.execute("INSERT INTO winners(participant_id, prize_name) values (?, ?)", [user_id, prize])
-        
-    DB.close()
-    return redirect('/')
+    with g.db:
+        g.db.execute("INSERT INTO winners(participant_id, prize_name) values (?, ?)", [user_id, prize])
+    
+    username = g.db.execute('SELECT name FROM participants WHERE id=?', (user_id,)).fetchone()
+    return render_template('winner_added.html', name=username[0], prize=prize)
     
 @app.route('/winners')
 def winners():
-    DB = sqlite3.connect('raffle.db')
-    winners = DB.execute("SELECT participants.name, winners.prize_name FROM participants INNER JOIN winners ON participants.id = winners.participant_id").fetchall()
-    response = '<ul><li>'
-    response += '<li>'.join([winner[0] + ': ' + winner[1] for winner in winners])
-    DB.close()
-    return response
+    winners = g.db.execute("SELECT participants.name, winners.prize_name FROM participants INNER JOIN winners ON participants.id = winners.participant_id").fetchall()
+    return render_template('winners_list.html', winners=winners)
 
 def build_db():
     DB = sqlite3.connect('raffle.db')

@@ -1,21 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>BSG Raffle</title>
-</head>
-<body>
-    <div>
-        <h1>BSG Raffle</h1>
-        <h2>Winner name: {{ name }}</h2>
-        <div>
-            <form action="/add_winner" method="POST">
-                <p><input type="hidden" name="user_id" value="{{ id }}"></p>
-                <p><label for="prize">Prize: </label><input type="text" name="prize" /></p>
-                <p><input type="submit" value="Add winner" /></p>
-            </form>
-        </div>
-        <p><a href="/">Pick new winner</a></p>
-        <p><a href="/winners">Winners</a></p>
-    </div>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+<h2>Winner name: {{ name }}</h2>
+<div>
+    <form action="/add_winner" method="POST">
+        <p><input type="hidden" name="user_id" value="{{ id }}"></p>
+        <p><label for="prize">Prize: </label><input type="text" name="prize" /></p>
+        <p><input type="submit" value="Add winner" /></p>
+    </form>
+</div>
+<p><a href="/">Pick new winner</a></p>
+<p><a href="/winners">Winners</a></p>
+{% endblock %}

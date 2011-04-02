@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<ul>
+    {% for winner, prize in winners %}
+    <li>{{ winner }}: {{ prize }}</li>
+    {% endfor %}
+</ul>
+<p><a href="/">Pick new winner</a></p>
+{% endblock %}
