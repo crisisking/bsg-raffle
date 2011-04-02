@@ -1,6 +1,6 @@
 import sqlite3
 import random
-from flask import Flask, render_template, request, redirect, g
+from flask import Flask, render_template, request, redirect, g, flash
 
 app = Flask(__name__)
 
@@ -60,6 +60,17 @@ def winners():
     return render_template('winners_list.html', winners=winners)
 
 
+@app.route('/add_participant', methods=('GET', 'POST'))
+def add_participant():
+    if request.method == 'POST':
+        username = request.form['username']
+        with g.db:
+            g.db.execute("""INSERT INTO participants(name)
+                VALUES (?)""", (username,))
+        flash('%s added successfully!' % username)
+    return render_template('add_participant.html')
+
+
 def build_db():
     """Builds the database if necessary."""
     db = sqlite3.connect('raffle.db')
@@ -89,7 +100,9 @@ def build_db():
         db.close()
 
 
+app.secret_key = 'ouhw4lha;wlkehjfpoaiuhfg;awjehlkjahlkfjhewlkjfhalwekjhf'
+
+
 if __name__ == '__main__':
     build_db()
-    app.debug = True
     app.run()
