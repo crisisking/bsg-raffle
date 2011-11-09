@@ -29,7 +29,7 @@ def pick_user():
         ON winners.participant_id = participants.id
         WHERE winners.participant_id IS NULL""").fetchall()
 
-    user = random.choice(users)
+    user = random.SystemRandom().choice(users)
     return render_template('winner.html', id=user[0], name=user[1])
 
 
